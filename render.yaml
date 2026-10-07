@@ -1,0 +1,62 @@
+# render.yaml — Render Blueprint for GlandFind
+# Docs: https://render.com/docs/blueprint-spec
+#
+# Architecture: single Web Service.
+#   - Build phase: installs all workspaces + builds the React client (Vite).
+#   - Start phase: runs the Node API server, which also serves client/dist
+#     as static files and falls back to index.html for SPA routing.
+#
+# No separate static site service is needed — the API and frontend share one
+# origin, so there is zero CORS complexity in production.
+
+services:
+  - type: web
+    name: glandfind
+    runtime: node
+    region: oregon          # change to "frankfurt" or "singapore" if closer to users
+    plan: free              # upgrade to "starter" for always-on + custom domains
+
+    # Root of the repo on Render. The monorepo root contains both workspaces.
+    rootDir: GladFind
+
+    # ── Build ──────────────────────────────────────────────────────────────
+    # 1. npm install  → installs server + client workspace dependencies
+    # 2. npm run build --workspace client  → Vite produces client/dist/
+    buildCommand: npm run build:render
+
+    # ── Start ──────────────────────────────────────────────────────────────
+    # node server/src/index.js (via the workspace script)
+    startCommand: npm start
+
+    # ── Health check ───────────────────────────────────────────────────────
+    healthCheckPath: /api/health
+
+    # ── Environment variables ──────────────────────────────────────────────
+    # Set sensitive values (JWT_SECRET, MONGODB_URI) in the Render dashboard
+    # under "Environment" — do NOT hard-code them here.
+    envVars:
+      - key: NODE_ENV
+        value: production
+
+      - key: PORT
+        value: 3000
+
+      # DATA_DRIVER: set to "mongo" here and add MONGODB_URI in the dashboard
+      # to enable real persistence. Defaults to "memory" (demo mode).
+      - key: DATA_DRIVER
+        value: memory        # change to "mongo" when you wire up Atlas
+
+      # ALLOWED_ORIGINS: same-origin in production (client is served by the
+      # same server), so this is only needed if you add a separate frontend.
+      # Leave as the Render service URL or your custom domain.
+      - key: ALLOWED_ORIGINS
+        fromService:
+          type: web
+          name: glandfind
+          property: host    # resolves to https://glandfind.onrender.com
+
+      # JWT_SECRET: generate one with:
+      #   node -e "console.log(require('node:crypto').randomBytes(48).toString('hex'))"
+      # Then paste the output into Render's Environment tab as JWT_SECRET.
+      - key: JWT_SECRET
+        generateValue: true  # Render generates a random value automatically
