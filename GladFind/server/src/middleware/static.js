@@ -6,8 +6,8 @@ import { fileURLToPath } from 'node:url';
 import { createReadStream, statSync } from 'node:fs';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
-// server/src/middleware  →  repo-root/client/dist
-const DIST = path.resolve(here, '..', '..', '..', '..', 'client', 'dist');
+// server/src/middleware  →  GladFind/client/dist
+const DIST = path.resolve(here, '..', '..', '..', 'client', 'dist');
 
 const MIME = {
   '.html': 'text/html; charset=utf-8',
