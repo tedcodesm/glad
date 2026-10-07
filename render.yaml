@@ -38,6 +38,10 @@ services:
       - key: NODE_ENV
         value: production
 
+      # Allow devDependencies to be installed during build (vite, etc.)
+      - key: NPM_CONFIG_PRODUCTION
+        value: "false"
+
       - key: PORT
         value: 3000
 
