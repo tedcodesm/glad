@@ -1,0 +1,22 @@
+{
+  "name": "@glandfind/server",
+  "version": "2.0.0",
+  "private": true,
+  "type": "module",
+  "description": "GlandFind API — zero-framework Node.js HTTP server on MongoDB",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "node --watch src/index.js",
+    "db:seed": "node scripts/seed.js",
+    "db:drop": "node scripts/drop.js",
+    "test": "node --test --test-reporter=spec \"tests/**/*.test.js\""
+  },
+  "dependencies": {
+    "mongoose": "^9.10.3"
+  },
+  "engines": {
+    "node": ">=20.19.0"
+  },
+  "license": "MIT"
+}

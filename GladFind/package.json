@@ -1,0 +1,27 @@
+{
+  "name": "glandfind",
+  "version": "2.0.0",
+  "private": true,
+  "description": "GlandFind — Kenya's medical search platform. React + Tailwind frontend, zero-framework Node/MongoDB API.",
+  "type": "module",
+  "workspaces": [
+    "server",
+    "client"
+  ],
+  "scripts": {
+    "dev": "node scripts/dev.js",
+    "dev:server": "npm run dev --workspace server",
+    "dev:client": "npm run dev --workspace client",
+    "build": "npm run build --workspace client",
+    "build:render": "npm install && npm run build --workspace client",
+    "preview": "npm run preview --workspace client",
+    "start": "npm run start --workspace server",
+    "db:seed": "npm run db:seed --workspace server",
+    "db:drop": "npm run db:drop --workspace server",
+    "test": "npm run test --workspace server"
+  },
+  "engines": {
+    "node": ">=20.19.0"
+  },
+  "license": "MIT"
+}
