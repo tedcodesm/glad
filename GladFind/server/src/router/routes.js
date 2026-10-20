@@ -37,6 +37,7 @@ router.get('/api/insurance', hosp.listInsurance);
 // Controllers take (req, res) only and read ids from req.params, so they are
 // registered directly — a wrapper would hand them the router's `next` as a
 // third positional argument.
+router.get('/api/hospitals/mine', authenticate, requireRole(...ADMIN), hosp.mine);
 router.get('/api/hospitals', hosp.search);
 router.get('/api/hospitals/:id', hosp.getOne);
 

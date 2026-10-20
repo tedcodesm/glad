@@ -112,4 +112,12 @@ export const Api = {
   submitIntake: (payload) => api.post('/api/patient-profiles', payload, { auth: true }).then((r) => r.profile),
   myIntake: () => api.get('/api/patient-profiles/mine', { auth: true }).then((r) => r.profile),
   lookupIntake: (code) => api.get(`/api/patient-profiles/${encodeURIComponent(code)}`).then((r) => r.profile),
+
+  // Hospital administrator endpoints
+  myHospitals: () => api.get('/api/hospitals/mine', { auth: true }).then((r) => r.hospitals),
+  createHospital: (payload) => api.post('/api/hospitals', payload, { auth: true }).then((r) => r.hospital),
+  updateHospital: (id, payload) => api.put(`/api/hospitals/${id}`, payload, { auth: true }).then((r) => r.hospital),
+  addHospitalService: (id, payload) => api.post(`/api/hospitals/${id}/services`, payload, { auth: true }).then((r) => r.service),
+  hospitalAppointments: (id, params) => api.get(`/api/hospitals/${id}/appointments${toQuery(params)}`, { auth: true }),
+  updateAppointmentStatus: (id, status) => api.patch(`/api/appointments/${id}/status`, { status }, { auth: true }).then((r) => r.appointment),
 };

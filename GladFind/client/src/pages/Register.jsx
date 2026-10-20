@@ -49,7 +49,7 @@ export default function Register() {
         role: form.role,
       });
       toast.success('Account created — welcome to GlandFind');
-      navigate(form.role === 'hospital_admin' ? '/register' : '/profile', { replace: true });
+      navigate('/profile', { replace: true });
     } catch (e) {
       setError(e.message);
     } finally {

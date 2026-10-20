@@ -27,14 +27,35 @@ export function Header() {
           {NAV.map((item) => (
             <NavLink key={item.to} to={item.to}>{item.label}</NavLink>
           ))}
+          {user?.role === 'hospital_admin' && (
+            <NavLink to="/profile">
+              <span className="inline-flex items-center gap-1.5 font-bold text-brand-600">
+                <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+                Hospital Portal
+              </span>
+            </NavLink>
+          )}
         </nav>
 
         <div className="hidden items-center gap-2 md:flex">
           {user ? (
             <>
-              <span className="max-w-[14ch] truncate text-sm text-navy/65" title={user.email}>
-                {user.full_name}
-              </span>
+              <Link
+                to="/profile"
+                className="flex items-center gap-2 rounded-lg px-2.5 py-1.5 text-sm font-medium text-navy/80 transition hover:bg-navy/5 hover:text-navy"
+                title={user.email}
+              >
+                <span className="max-w-[14ch] truncate font-semibold">{user.full_name}</span>
+                {user.role === 'hospital_admin' ? (
+                  <span className="rounded-full bg-brand-100 px-2 py-0.5 text-xs font-bold text-brand-800">
+                    Admin
+                  </span>
+                ) : (
+                  <span className="rounded-full bg-navy/10 px-2 py-0.5 text-xs font-semibold text-navy/70">
+                    Dashboard
+                  </span>
+                )}
+              </Link>
               <button type="button" className="btn-ghost" onClick={logout}>Sign out</button>
             </>
           ) : (
@@ -65,6 +86,11 @@ export function Header() {
                 {item.label}
               </NavLink>
             ))}
+            {user && (
+              <NavLink key="/profile" to="/profile" onClick={() => setOpen(false)}>
+                {user.role === 'hospital_admin' ? '🏥 Hospital Portal & Dashboard' : '📋 My Appointments & Profile'}
+              </NavLink>
+            )}
             <div className="mt-2 flex flex-col gap-2 border-t border-navy/10 pt-3">
               {user ? (
                 <button type="button" className="btn-secondary" onClick={logout}>Sign out</button>

@@ -125,10 +125,17 @@ function createMemoryRepo() {
       return enrichHospital(hospital);
     },
 
+    async listByOwner(ownerId) {
+      return store.hospitals
+        .filter((h) => h.owner_id != null && String(h.owner_id) === String(ownerId))
+        .map(enrichHospital);
+    },
+
     async update(id, data) {
       const hospital = store.hospitals.find((h) => h.id === id);
       if (!hospital) return null;
       Object.assign(hospital, pick(data, HOSPITAL_WRITABLE), { updated_at: new Date() });
+      if (data.insurance_providers) await this.setInsurance(hospital.id, data.insurance_providers);
       return enrichHospital(hospital);
     },
 
@@ -273,6 +280,11 @@ function createMongoRepo() {
       ]);
 
       return { total: countRows[0]?.total ?? 0, results: await shape(pageRows) };
+    },
+
+    async listByOwner(ownerId) {
+      const list = await Hospital.find({ owner_id: ownerId }).sort({ createdAt: -1 }).lean();
+      return Promise.all(list.map(shapeOne));
     },
 
     async findById(id) {

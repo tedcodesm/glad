@@ -5,6 +5,7 @@ import { Api } from '../lib/api.js';
 import { Alert, Badge, EmptyState, LoadingBlock } from '../components/ui.jsx';
 import { useAuth } from '../context/AuthContext.jsx';
 import { useToast } from '../context/ToastContext.jsx';
+import { HospitalAdminDashboard } from '../components/HospitalAdminDashboard.jsx';
 
 const STATUS_TONES = {
   requested: 'warning',
@@ -17,6 +18,7 @@ export default function Profile() {
   const { user, status, logout } = useAuth();
   const toast = useToast();
 
+  const [viewMode, setViewMode] = useState(null); // 'admin' | 'patient' | null (defaults to role)
   const [appointments, setAppointments] = useState(null);
   const [profile, setProfile] = useState(null);
   const [lookup, setLookup] = useState('');
@@ -67,8 +69,37 @@ export default function Profile() {
     }
   }
 
+  const isHospitalAdmin = user?.role === 'hospital_admin' || user?.role === 'platform_admin';
+  const showAdminPortal = isHospitalAdmin && (viewMode === 'admin' || viewMode === null);
+
+  if (showAdminPortal) {
+    return (
+      <div className="container-page py-10">
+        <HospitalAdminDashboard
+          user={user}
+          onSwitchToPatientView={() => setViewMode('patient')}
+        />
+      </div>
+    );
+  }
+
   return (
     <div className="container-page py-10">
+      {isHospitalAdmin && (
+        <div className="mb-6 flex items-center justify-between rounded-xl border border-brand-500/20 bg-brand-50/60 p-4">
+          <p className="text-xs font-semibold text-brand-900">
+            🏥 You are in <strong>Patient View</strong>. Switch back to manage your facilities and bookings.
+          </p>
+          <button
+            type="button"
+            className="btn-primary text-xs"
+            onClick={() => setViewMode('admin')}
+          >
+            Go to Hospital Admin Portal →
+          </button>
+        </div>
+      )}
+
       <header className="mb-8 flex flex-wrap items-center justify-between gap-4">
         <div>
           <h1 className="text-3xl font-extrabold tracking-tight text-navy">
@@ -76,7 +107,18 @@ export default function Profile() {
           </h1>
           <p className="mt-1.5 text-sm text-navy/60">{user.email}</p>
         </div>
-        <button type="button" className="btn-secondary" onClick={logout}>Sign out</button>
+        <div className="flex items-center gap-3">
+          {isHospitalAdmin && (
+            <button
+              type="button"
+              className="btn-secondary text-xs"
+              onClick={() => setViewMode('admin')}
+            >
+              Hospital Admin Portal
+            </button>
+          )}
+          <button type="button" className="btn-secondary" onClick={logout}>Sign out</button>
+        </div>
       </header>
 
       <div className="grid gap-7 lg:grid-cols-[1fr_320px]">

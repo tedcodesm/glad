@@ -7,8 +7,13 @@ const VALID_SORTS = ['relevance', 'fee_asc', 'rating'];
 const UPDATABLE = [
   'name', 'facility_type', 'county', 'town', 'address_line', 'latitude', 'longitude',
   'phone', 'email', 'about', 'bed_capacity', 'specialist_count',
-  'accepts_walk_ins', 'supports_booking', 'is_open',
+  'accepts_walk_ins', 'supports_booking', 'is_open', 'insurance_providers',
 ];
+
+export async function mine(req, res) {
+  const hospitals = await hospitalRepository.listByOwner(req.user.id);
+  ok(res, { hospitals });
+}
 
 export async function search(req, res) {
   const q = parseQuery(req.url);

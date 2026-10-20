@@ -245,6 +245,19 @@ describe('hospitals — registration requires hospital_admin', () => {
     assert.equal(r.body.total, 0, 'pending facilities must not be publicly visible');
   });
 
+  it('lists facilities owned by the hospital admin via /mine', async () => {
+    const admin = await signUp({
+      full_name: 'Mine Admin', email: uniqEmail('mine'), password: 'adminpass1', role: 'hospital_admin',
+    });
+    const created = await api.post('/api/hospitals', clinic('Mine Clinic Limuru'), admin.token);
+    assert.equal(created.status, 201);
+
+    const r = await api.get('/api/hospitals/mine', { token: admin.token });
+    assert.equal(r.status, 200);
+    assert.equal(r.body.hospitals.length, 1);
+    assert.equal(r.body.hospitals[0].name, 'Mine Clinic Limuru');
+  });
+
   it('rejects a service for a hospital the admin does not own', async () => {
     const admin = await signUp({
       full_name: 'Wrong Owner', email: uniqEmail('wrongown'), password: 'adminpass1', role: 'hospital_admin',
