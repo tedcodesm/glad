@@ -199,14 +199,15 @@ describe('hospitals — registration requires hospital_admin', () => {
     about: 'A demo clinic for testing.', insurance_providers: ['NHIF'],
   });
 
-  it('creates a facility as pending', async () => {
+  it('creates a facility as approved and verified in demo mode', async () => {
     const admin = await signUp({
       full_name: 'Admin User', email: uniqEmail('admin'), password: 'adminpass1', role: 'hospital_admin',
     });
 
     const r = await api.post('/api/hospitals', clinic('Test Clinic Limuru'), admin.token);
     assert.equal(r.status, 201);
-    assert.equal(r.body.hospital.status, 'pending');
+    assert.equal(r.body.hospital.status, 'approved');
+    assert.equal(r.body.hospital.is_verified, true);
     assert.deepEqual(r.body.hospital.insurance_providers, ['NHIF']);
   });
 
@@ -240,9 +241,9 @@ describe('hospitals — registration requires hospital_admin', () => {
     assert.deepEqual(r.body.hospital.insurance_providers, ['NHIF']);
   });
 
-  it('keeps a new facility out of public search until approved', async () => {
+  it('makes the new facility immediately visible in public search', async () => {
     const r = await api.get('/api/hospitals?q=Test%20Clinic%20Limuru');
-    assert.equal(r.body.total, 0, 'pending facilities must not be publicly visible');
+    assert.equal(r.body.total, 1, 'auto-approved facilities must be publicly visible');
   });
 
   it('lists facilities owned by the hospital admin via /mine', async () => {
